@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour {
 
@@ -101,9 +102,15 @@ public class PlayerController : MonoBehaviour {
             {
                 this.transform.Translate(Vector3.left * runSpeed * Time.deltaTime);
             }
+
         }
+
     }
 
+
+
+
+    // Esta ees la funcion para determinar cuando toca un collider
     private void OnTriggerEnter2D(Collider2D collision)
     {
         switch (collision.gameObject.tag)
@@ -117,6 +124,10 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+   
+    // Funcion para hacer lo aleatorio /////////////////////////////////////
+
+
     private void consumeDrink(GameObject drink)
     {
         //print("entro en esta joda");
@@ -124,33 +135,61 @@ public class PlayerController : MonoBehaviour {
         count = count + 1;
         drunk_controller.changeDrunk(1);
 
-        if (count == 3){
+        if (count == 3)
+        {
 
-            timer.text = "10";
-            timer.enabled = true;
-
-            Surprise = Random.Range(1,4);
-            //Surprise = 2;
+            Surprise = Random.Range(1,5);
+            //Surprise = 4;
 
             if (Surprise == 1){
+                timer.text = "10";
+                timer.enabled = true;
                 InvokeRepeating("decreaseTime", 1f, 1f);
                 drunk = 1;
             }
 
             if(Surprise == 2){
-                //print("Aqui es donde se debe apagar la pantalla");
+                timer.text = "10";
+                timer.enabled = true;
                 this.gameObject.GetComponent<FadeOutCamera>().isDrunk = true;
                 InvokeRepeating("decreaseTime", 1f, 1f);
             }
             if (Surprise == 3)
             {
+                timer.text = "10";
+                timer.enabled = true;
+                print("Aqui debe buscar otro trago para mantener la pea");
+                InvokeRepeating("decreaseTime", 1f, 1f);
+
+            }
+
+            if (Surprise == 4)
+            {
+                //Empieza el laberinto
+                SceneManager.LoadScene("Dungeon", LoadSceneMode.Single);
+            }
+
+            if (Surprise == 5)
+            {
+                timer.text = "10";
+                timer.enabled = true;
                 print("Aqui es donde da super poder");
                 drunk_controller.changeDrunk(-3);
                 count = 0;
             }
+
+        }
+        if((count == 4)&&(Surprise ==3))
+        {
+            sober();
+            CancelInvoke("decreaseTime");
+            timer.enabled = false;
+            
         }
     }
 
+
+    //Vuelve a la normalidad
 
     private void sober() {
         drunk = 0;
@@ -160,8 +199,10 @@ public class PlayerController : MonoBehaviour {
 
     }
 
+    //Todo demora 10 segundos
+
     private void decreaseTime() {
-        Debug.Log("Are you working?" + Surprise);
+        Debug.Log("Are you working?" + " " + Surprise);
         int value;
         int.TryParse (timer.text, out value);
 
@@ -169,7 +210,13 @@ public class PlayerController : MonoBehaviour {
 
         timer.text = value.ToString();
 
-        if((value == 0) & (Surprise == 1)) 
+
+        if ((count == 3) && (Surprise == 3))
+        {
+            health_controller.changeHealth(-10);
+        }
+
+        if ((value == 0) & (Surprise == 1)) 
         {
             sober();
             CancelInvoke("decreaseTime");
@@ -183,9 +230,10 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    //Cuando toca el guardia muere de una vez.
+
     private void InstantDeath(GameObject guard){
         //print("ENTRO EN ESTA JODA - " + health_controller);
         health_controller.changeHealth(-100);
-
     }
 }

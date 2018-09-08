@@ -6,6 +6,7 @@ TagManager:
   tags:
   - DrinkTag
   - EnemyGuard
+  - FinishDungeon
   layers:
   - Default
   - TransparentFX
