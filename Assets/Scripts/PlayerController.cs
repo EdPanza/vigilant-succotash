@@ -13,8 +13,10 @@ public class PlayerController : MonoBehaviour {
     private int drunk;
     private int count;
     private Rigidbody2D playerBody;
+    private Animator Animator;
     private DrunkBar drunk_controller;
     private HealthBar health_controller;
+    private SpriteRenderer Ned;
     private const string Drink_Tag = "DrinkTag";
     private const string Enemy_Tag = "EnemyGuard";
     private Text timer;
@@ -39,10 +41,12 @@ public class PlayerController : MonoBehaviour {
     private void Awake()
     {
         playerBody = this.gameObject.GetComponent<Rigidbody2D>();
+        Animator = this.gameObject.GetComponent<Animator>();
         drunk_controller = GameObject.Find("DrunkBar").GetComponent<DrunkBar>();
         health_controller = GameObject.Find("Canvas/HealthBar").GetComponent<HealthBar>();
         timer = GameObject.Find("Canvas/Timer").GetComponent<Text>();
         this.gameObject.AddComponent<FadeOutCamera>();
+        Ned = this.gameObject.GetComponent<SpriteRenderer>();
 
         drunk = 0;
         count = 0;
@@ -52,7 +56,7 @@ public class PlayerController : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-
+        Animator.SetBool("Moving", false);
 
         if (drunk == 0)
         {
@@ -70,11 +74,15 @@ public class PlayerController : MonoBehaviour {
             if (Input.GetKey(KeyCode.LeftArrow))
             {
                 //print("left arrow key is held down");
+                Animator.SetBool("Moving", true);
+                Ned.flipX = true;
                 this.transform.Translate(Vector3.left * runSpeed * Time.deltaTime);
+
             }
 
             if (Input.GetKey(KeyCode.RightArrow))
             {
+                Animator.SetBool("Moving", true);
                 this.transform.Translate(Vector3.right * runSpeed * Time.deltaTime);
             }
         }
