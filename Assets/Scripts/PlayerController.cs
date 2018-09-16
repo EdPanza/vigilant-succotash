@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour {
 
     public float runSpeed;
     public float jumpForce;
+    public bool grounded;
 
     private int Surprise;
     private int drunk;
@@ -19,6 +20,7 @@ public class PlayerController : MonoBehaviour {
     private SpriteRenderer Ned;
     private const string Drink_Tag = "DrinkTag";
     private const string Enemy_Tag = "EnemyGuard";
+    private const string Kill_Tag = "eche";
     private Text timer;
 
     Texture2D blk;
@@ -59,63 +61,64 @@ public class PlayerController : MonoBehaviour {
         Animator.SetBool("Moving", false);
 
         if (drunk == 0)
-        {
-            if (Input.GetKeyDown(KeyCode.UpArrow))
-            {
-                //print("up arrow key is held down");
-                playerBody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-            }
+        {   
 
-            if (Input.GetKey("down"))
-            {
-                print("down arrow key is held down");
-            }
-
+            //Tecla de la izquierda
             if (Input.GetKey(KeyCode.LeftArrow))
             {
                 //print("left arrow key is held down");
                 Animator.SetBool("Moving", true);
                 Ned.flipX = true;
                 this.transform.Translate(Vector3.left * runSpeed * Time.deltaTime);
-
             }
 
+            //Tecla de la derecha
             if (Input.GetKey(KeyCode.RightArrow))
             {
+                Ned.flipX = false;
                 Animator.SetBool("Moving", true);
                 this.transform.Translate(Vector3.right * runSpeed * Time.deltaTime);
             }
+
+            //Tecla de arriba
+            if(Input.GetKeyDown(KeyCode.UpArrow) && grounded)
+            {
+                //playerBody.AddForce(new Vector2(0, 10), ForceMode2D.Impulse);
+                //playerBody.AddForce(Vector2.up * jumpForce * Time.deltaTime);
+                playerBody.AddForce(Vector2.up * jumpForce);
+            }
+
         }
 
         if (drunk == 1)
         {
-            if (Input.GetKeyDown(KeyCode.UpArrow))
-            {
-                print("up arrow key is held down");
-            }
 
-            if (Input.GetKey("down"))
-            {
-                //print("down arrow key is held down");
-                playerBody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-            }
-
-            if (Input.GetKey(KeyCode.LeftArrow))
+            //Tecla de la izquierda
+            if (Input.GetKey(KeyCode.RightArrow))
             {
                 //print("left arrow key is held down");
+                Animator.SetBool("Moving", true);
+                Ned.flipX = true;
+                this.transform.Translate(Vector3.left * runSpeed * Time.deltaTime);
+            }
+
+            //Tecla de la derecha
+            if (Input.GetKey(KeyCode.LeftArrow))
+            {
+                Ned.flipX = false;
+                Animator.SetBool("Moving", true);
                 this.transform.Translate(Vector3.right * runSpeed * Time.deltaTime);
             }
 
-            if (Input.GetKey(KeyCode.RightArrow))
+            //Tecla de arriba
+            if (Input.GetKeyDown(KeyCode.DownArrow) && grounded)
             {
-                this.transform.Translate(Vector3.left * runSpeed * Time.deltaTime);
+                playerBody.AddForce(Vector2.up * jumpForce);
             }
 
         }
 
     }
-
-
 
 
     // Esta ees la funcion para determinar cuando toca un collider
@@ -126,13 +129,32 @@ public class PlayerController : MonoBehaviour {
             case Drink_Tag:
                 consumeDrink(collision.gameObject);
                 break;
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        switch (collision.gameObject.tag)
+        {
+            case Kill_Tag:
+                DyingEnemy(collision.gameObject);
+                break;
             case Enemy_Tag:
                 InstantDeath(collision.gameObject);
                 break;
         }
     }
 
-   
+
+    private void DyingEnemy(GameObject enemy)
+    {
+        Debug.Log("Entro en esta joda");
+        GameObject.Destroy(enemy);
+    }
+
+
+
+
     // Funcion para hacer lo aleatorio /////////////////////////////////////
 
 
@@ -146,8 +168,8 @@ public class PlayerController : MonoBehaviour {
         if (count == 3)
         {
 
-            Surprise = Random.Range(1,5);
-            //Surprise = 4;
+            //Surprise = Random.Range(1,5);
+            Surprise = 1;
 
             if (Surprise == 1){
                 timer.text = "10";
@@ -241,7 +263,7 @@ public class PlayerController : MonoBehaviour {
     //Cuando toca el guardia muere de una vez.
 
     private void InstantDeath(GameObject guard){
-        //print("ENTRO EN ESTA JODA - " + health_controller);
+        print("ENTRO EN ESTA JODA de muerte");
         health_controller.changeHealth(-100);
     }
 }

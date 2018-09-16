@@ -7,6 +7,8 @@ TagManager:
   - DrinkTag
   - EnemyGuard
   - FinishDungeon
+  - KillEnemy
+  - eche
   layers:
   - Default
   - TransparentFX
